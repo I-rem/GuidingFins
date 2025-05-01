@@ -1,8 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class FishFollowMouse : MonoBehaviour
 {
     public float moveSpeed = 5f;
+    private List<FollowerFish> followers = new List<FollowerFish>();
+    public float horizontalSpacing = 1.5f;
+    public float verticalSpacing = 1.0f;
 
     void Update()
     {
@@ -19,10 +23,22 @@ public class FishFollowMouse : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         FollowerFish follower = collision.GetComponent<FollowerFish>();
-        if (follower != null && follower.target == null)
+        if (follower != null && follower.targetToFollow == null)
         {
-            follower.StartFollowing(this.transform);
+            int index = followers.Count;
+
+            // Alternate left and right
+            int side = (index % 2 == 0) ? -1 : 1;
+            int row = (index + 1) / 2;
+
+            Vector3 offset = new Vector3(
+                side * horizontalSpacing * row,
+                -verticalSpacing * row,
+                0f
+            );
+
+            follower.StartFollowing(this.transform, offset);
+            followers.Add(follower);
         }
     }
-
 }
